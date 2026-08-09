@@ -942,7 +942,16 @@ async def serve_frontend(full_path: str):
     
     # Serve static assets directly if they exist
     if os.path.isfile(file_path):
-        return FileResponse(file_path)
+        # Explicit MIME types — Python's mimetypes DB is incomplete on
+        # minimal Linux images (Colab) and module scripts are rejected
+        # by the browser if served with the wrong Content-Type.
+        mime_map = {'.js': 'application/javascript', '.mjs': 'application/javascript',
+                    '.css': 'text/css', '.html': 'text/html', '.json': 'application/json',
+                    '.svg': 'image/svg+xml', '.png': 'image/png', '.woff2': 'font/woff2',
+                    '.woff': 'font/woff', '.ttf': 'font/ttf'}
+        ext = os.path.splitext(file_path)[1].lower()
+        media_type = mime_map.get(ext)
+        return FileResponse(file_path, media_type=media_type) if media_type else FileResponse(file_path)
         
     # For all other routes, serve index.html (SPA routing)
     index_path = os.path.join(frontend_dist, "index.html")

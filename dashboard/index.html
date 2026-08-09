@@ -16,7 +16,25 @@
 </head>
 
 <body>
-  <div id="root"></div>
+  <div id="root">
+    <div id="loading-fallback" style="display:flex;align-items:center;justify-content:center;height:100vh;color:#ccc;font-family:system-ui;font-size:18px;flex-direction:column;gap:12px;background:#0a0a0c">
+      <div style="font-size:28px;font-weight:bold;color:#0A81D9">ClippyMe</div>
+      <div>Loading...</div>
+    </div>
+  </div>
+  <script>
+    // Catch any JS errors and display them visually
+    window.addEventListener('error', function(e) {
+      var el = document.getElementById('loading-fallback');
+      if (el) {
+        el.innerHTML = '<div style="color:#E6428D;font-size:16px;max-width:600px;text-align:center;padding:20px">' +
+          '<div style="font-size:28px;margin-bottom:12px">⚠️ JS Error</div>' +
+          '<div>' + (e.message || 'Unknown error') + '</div>' +
+          '<div style="font-size:12px;color:#888;margin-top:8px">' + (e.filename || '') + ':' + (e.lineno || '') + '</div>' +
+          '</div>';
+      }
+    });
+  </script>
   <script type="module" src="/src/main.jsx"></script>
 </body>
 
