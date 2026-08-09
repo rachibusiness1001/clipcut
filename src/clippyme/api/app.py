@@ -217,7 +217,14 @@ async def _security_headers(request: Request, call_next):
     response.headers.setdefault("X-Content-Type-Options", "nosniff")
     response.headers.setdefault("X-Frame-Options", "DENY")
     response.headers.setdefault("Referrer-Policy", "strict-origin-when-cross-origin")
-    response.headers.setdefault("Content-Security-Policy", "default-src 'none'; frame-ancestors 'none'")
+    # API-only routes get a strict CSP; the SPA frontend needs scripts/styles/images.
+    if request.url.path.startswith("/api/"):
+        response.headers.setdefault("Content-Security-Policy", "default-src 'none'; frame-ancestors 'none'")
+    else:
+        response.headers.setdefault("Content-Security-Policy",
+            "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
+            "img-src 'self' data: blob: https://cdn.simpleicons.org; media-src 'self' blob:; "
+            "font-src 'self' data: https://fonts.gstatic.com; connect-src 'self'; frame-ancestors 'none'")
     return response
 
 
