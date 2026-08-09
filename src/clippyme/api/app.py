@@ -281,10 +281,7 @@ app.mount("/fonts", StaticFiles(directory="fonts"), name="fonts")
 app.include_router(config_router)
 
 
-@app.get("/")
-async def root():
-    return {"status": "online", "message": "ClippyMe API is running"}
-
+# Root route removed so frontend SPA catch-all can handle '/'
 @app.get("/api/health")
 async def health():
     return {"status": "healthy"}
