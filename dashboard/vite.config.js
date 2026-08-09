@@ -29,12 +29,16 @@ const CSP = [
 const cspPlugin = () => ({
   name: 'clippyme-inject-csp',
   apply: 'build',
-  transformIndexHtml() {
-    return [{
-      tag: 'meta',
-      attrs: { 'http-equiv': 'Content-Security-Policy', content: CSP },
-      injectTo: 'head-prepend',
-    }]
+  transformIndexHtml(html) {
+    const modifiedHtml = html.replace(/crossorigin/g, 'crossorigin="use-credentials"');
+    return {
+      html: modifiedHtml,
+      tags: [{
+        tag: 'meta',
+        attrs: { 'http-equiv': 'Content-Security-Policy', content: CSP },
+        injectTo: 'head-prepend',
+      }]
+    };
   },
 })
 
