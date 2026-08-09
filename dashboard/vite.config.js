@@ -30,15 +30,8 @@ const cspPlugin = () => ({
   name: 'clippyme-inject-csp',
   apply: 'build',
   transformIndexHtml(html) {
-    const modifiedHtml = html.replace(/crossorigin/g, 'crossorigin="use-credentials"');
-    return {
-      html: modifiedHtml,
-      tags: [{
-        tag: 'meta',
-        attrs: { 'http-equiv': 'Content-Security-Policy', content: CSP },
-        injectTo: 'head-prepend',
-      }]
-    };
+    // Remove crossorigin attributes that break localtunnel cookie forwarding
+    return html.replace(/ crossorigin/g, '');
   },
 })
 
