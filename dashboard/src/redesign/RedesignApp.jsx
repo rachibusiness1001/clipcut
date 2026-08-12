@@ -13,7 +13,9 @@ import { ResultsView } from './results';
 import { PublishModal } from './publish';
 import { HistoryView, SettingsView, ApiKeyModal } from './views';
 import { LiveMonitorView } from './live';
+import { AuthView } from './AuthView';
 import { EditClipModal } from './captions';
+import { getApiToken, setApiToken } from '../lib/apiToken';
 import { optsToPreselections, restoreJob, listBackendJobIds, cancelJob, pauseJob, resumeJob, stopJob, reframeClip, composeClip } from './realApi';
 import { allPresets, getDefaultPresetOpts, getDefaultPresetId, saveUserPreset, deleteUserPreset, setDefaultPreset } from './presets';
 import { HOOK_STYLE_DEFAULT } from './data';
@@ -78,6 +80,7 @@ function Toasts({ items, onDismiss }) {
 }
 
 export default function RedesignApp() {
+  const [authToken, setAuthToken] = useState(getApiToken());
   const restoredSession = useMemo(() => loadPersistedSession(), []);
   // The Gemini key is persisted in localStorage in cleartext. This is an
   // accepted tradeoff for the single-user self-host model (no server-side
@@ -396,6 +399,10 @@ export default function RedesignApp() {
     pushToast('info', `Reprocessing ${plan.length} clip${plan.length === 1 ? '' : 's'}…`);
     runBulk(plan);
   };
+
+  if (!authToken) {
+    return <AuthView onLogin={(token) => { setApiToken(token); setAuthToken(token); }} pushToast={pushToast} />;
+  }
 
   return (
     <div>

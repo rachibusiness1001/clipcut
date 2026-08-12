@@ -27,7 +27,7 @@ vi.mock('./realApi', () => ({
   deleteLogo: vi.fn(),
 }));
 
-const EMPTY_CONFIG = { GEMINI_API_KEY: '', HF_TOKEN: '', DEEPGRAM_API_KEY: '', ELEVENLABS_API_KEY: '' };
+const EMPTY_CONFIG = { GEMINI_API_KEY: '', HF_TOKEN: '' };
 const SET_CONFIG = { ...EMPTY_CONFIG, GEMINI_API_KEY: 'AIza...xyz1' };
 
 beforeEach(() => {
@@ -73,13 +73,13 @@ test('a failed post-save refetch does not wipe previously-known present state', 
   const pushToast = mount();
   await waitFor(() => expect(within(geminiRow()).getByText('set')).toBeInTheDocument());
 
-  const input = screen.getByLabelText('Deepgram');
+  const input = screen.getByLabelText('Hugging Face token');
   fireEvent.focus(input);
-  fireEvent.change(input, { target: { value: 'dg_key' } });
+  fireEvent.change(input, { target: { value: 'hf_key' } });
   fireEvent.blur(input);
 
   await waitFor(() => expect(getConfig).toHaveBeenCalledTimes(2));
-  // Gemini's badge (unrelated to the Deepgram save) must still read "set".
+  // Gemini's badge (unrelated to the save) must still read "set".
   expect(within(geminiRow()).getByText('set')).toBeInTheDocument();
   expect(pushToast).toHaveBeenCalledWith('warn', expect.any(String));
 });

@@ -256,11 +256,11 @@ def transcribe_video(video_path):
     downstream Gemini prompt + subtitle writer see the same ``speaker``
     field as the Deepgram path.
     """
-    provider = (os.getenv("TRANSCRIPTION_PROVIDER") or "deepgram").strip().lower()
+    # Force provider to whisper as part of Zero-Cost SaaS architecture
+    provider = "whisper"
 
-    # Strip to an audio-only track once so neither backend ingests the full
-    # video (see diarization.extract_audio_for_asr). Massively shrinks the
-    # Deepgram upload and skips Whisper's video demux at zero accuracy cost.
+    # Strip to an audio-only track once so Whisper doesn't ingest the full
+    # video (see diarization.extract_audio_for_asr).
     # Opt out with CLIPPYME_TRANSCRIBE_AUDIO_ONLY=false; on extraction failure
     # we transparently fall back to the source file.
     asr_input = video_path
@@ -271,40 +271,7 @@ def transcribe_video(video_path):
         if _audio_tmp:
             asr_input = _audio_tmp
 
-    # Optional ElevenLabs Voice Isolator pre-pass — strips background noise/music
-    # before ASR for cleaner transcripts on noisy sources. Provider-agnostic
-    # (helps Whisper/Deepgram too) but needs an ElevenLabs key. Opt-in via
-    # ELEVENLABS_AUDIO_ISOLATION; non-fatal — falls back to the raw audio.
-    if (os.getenv("ELEVENLABS_AUDIO_ISOLATION") or "false").strip().lower() in ("1", "true", "yes"):
-        try:
-            from clippyme.pipeline.elevenlabs_transcribe import isolate_audio
-            _iso = isolate_audio(asr_input)
-            if _iso:
-                _iso_tmp = _iso
-                asr_input = _iso
-        except Exception as exc:  # noqa: BLE001 — isolation is best-effort
-            logging.getLogger("clippyme").warning("Voice isolation errored (%s) — skipping", exc)
-
     try:
-        if provider == "deepgram":
-            try:
-                from clippyme.pipeline.deepgram_transcribe import transcribe_with_deepgram, DeepgramError
-                return transcribe_with_deepgram(asr_input)
-            except Exception as exc:  # noqa: BLE001 — broad catch for safe fallback
-                logging.getLogger("clippyme").warning(
-                    "Deepgram transcription failed (%s) — falling back to Faster-Whisper", exc
-                )
-                print(f"⚠️  Deepgram transcription failed ({exc}); falling back to Faster-Whisper.")
-        elif provider == "elevenlabs":
-            try:
-                from clippyme.pipeline.elevenlabs_transcribe import transcribe_with_elevenlabs
-                return transcribe_with_elevenlabs(asr_input)
-            except Exception as exc:  # noqa: BLE001 — broad catch for safe fallback
-                logging.getLogger("clippyme").warning(
-                    "ElevenLabs transcription failed (%s) — falling back to Faster-Whisper", exc
-                )
-                print(f"⚠️  ElevenLabs transcription failed ({exc}); falling back to Faster-Whisper.")
-
         device = "cuda" if CUDA_AVAILABLE else "cpu"
         compute_type = "float16" if device == "cuda" else "int8"
         print(f"🎙️  Transcribing with Faster-Whisper [{WHISPER_MODEL}] ({device.upper()} mode)...")

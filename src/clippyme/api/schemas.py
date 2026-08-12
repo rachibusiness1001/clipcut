@@ -140,8 +140,7 @@ class BatchRequest(BaseModel):
 
 _ALLOWED_CONFIG_KEYS = frozenset({
     "GEMINI_API_KEY", "GEMINI_MODEL", "YOUTUBE_COOKIES", "HF_TOKEN",
-    "HUGGINGFACE_TOKEN", "DEEPGRAM_API_KEY", "ELEVENLABS_API_KEY",
-    "TRANSCRIPTION_PROVIDER", "TWITCH_CLIENT_ID", "TWITCH_CLIENT_SECRET",
+    "HUGGINGFACE_TOKEN", "TWITCH_CLIENT_ID", "TWITCH_CLIENT_SECRET",
 })
 
 
@@ -157,9 +156,6 @@ class ConfigUpdateRequest(BaseModel):
         for name, value in values.items():
             if len(value) > 4096:
                 raise ValueError(f"config value for {name!r} too long (max 4096)")
-        provider = values.get("TRANSCRIPTION_PROVIDER")
-        if provider not in (None, "", "deepgram", "elevenlabs", "whisper"):
-            raise ValueError("TRANSCRIPTION_PROVIDER must be deepgram, elevenlabs or whisper")
         model = values.get("GEMINI_MODEL")
         if model and not GEMINI_MODEL_RE.fullmatch(model):
             raise ValueError("GEMINI_MODEL is not a valid Gemini model id")

@@ -15,9 +15,6 @@ VALID_CONFIG_KEYS = (
     "GEMINI_MODEL",
     "YOUTUBE_COOKIES",
     "HF_TOKEN",
-    "DEEPGRAM_API_KEY",
-    "ELEVENLABS_API_KEY",
-    "TRANSCRIPTION_PROVIDER",
     "TWITCH_CLIENT_ID",
     "TWITCH_CLIENT_SECRET",
 )
@@ -162,32 +159,24 @@ def load_persistent_config() -> dict:
         "GEMINI_MODEL": os.environ.get("GEMINI_MODEL", "gemini-3.5-flash"),
         "YOUTUBE_COOKIES": os.environ.get("YOUTUBE_COOKIES", ""),
         "HF_TOKEN": os.environ.get("HF_TOKEN") or os.environ.get("HUGGINGFACE_TOKEN") or "",
-        "DEEPGRAM_API_KEY": os.environ.get("DEEPGRAM_API_KEY", ""),
-        "ELEVENLABS_API_KEY": os.environ.get("ELEVENLABS_API_KEY", ""),
-        "TRANSCRIPTION_PROVIDER": os.environ.get("TRANSCRIPTION_PROVIDER", "deepgram"),
         "TWITCH_CLIENT_ID": os.environ.get("TWITCH_CLIENT_ID", ""),
         "TWITCH_CLIENT_SECRET": os.environ.get("TWITCH_CLIENT_SECRET", ""),
     }
-    raw = _read_raw_config()
-    config.update({key: value for key, value in raw.items() if key in VALID_CONFIG_KEYS})
+    # No longer reading from data/config.json for SaaS security.
+    # All platform secrets must be provided via .env
     return config
 
 
 def save_persistent_config(new_config: dict) -> bool:
-    """Persist core keys without racing the separate Zernio namespace."""
+    """Update runtime config in os.environ without persisting to disk.
+    In a SaaS environment, platform secrets should not be saved via UI."""
     with _CONFIG_LOCK:
-        raw = _read_raw_config()
         normalized = _normalize_incoming_keys(new_config)
         sanitized = {
             key: normalized.get(key) for key in VALID_CONFIG_KEYS if key in normalized
         }
-        for key, value in sanitized.items():
-            if value in (None, ""):
-                raw.pop(key, None)
-            else:
-                raw[key] = value
-        if not _write_raw_config(raw):
-            return False
+        
+        # Only update the process environment temporarily
         for key, value in sanitized.items():
             if value in (None, ""):
                 os.environ.pop(key, None)
@@ -198,3 +187,4 @@ def save_persistent_config(new_config: dict) -> bool:
                 if key == "HF_TOKEN":
                     os.environ["HUGGINGFACE_TOKEN"] = str(value)
         return True
+

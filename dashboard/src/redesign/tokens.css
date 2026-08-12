@@ -21,24 +21,24 @@
   --brand-pink:    #E6428D;  /* gradient start                 */
   --brand-purple:  #9850C3;  /* gradient mid                   */
   --brand-indigo:  #675ADD;  /* gradient mid                   */
-  --brand-blue:    #0A81D9;  /* PRIMARY — buttons, links, focus */
+  --brand-neon:    #00FF66;  /* PRIMARY — buttons, links, focus */
   --brand-teal:    #02C5BF;  /* success-ish / fresh accent     */
   --brand-cyan:    #00D9FF;  /* highlight / glow               */
 
-  /* primary scale (around brand blue) */
-  --blue-50:  #E6F4FE;
-  --blue-100: #BFE2FB;
-  --blue-300: #5CB4EE;
-  --blue-500: #0A81D9;
-  --blue-600: #0869B3;
-  --blue-700: #074F87;
+  /* primary scale (neon green replacing blue) */
+  --blue-50:  #E5FFE5;
+  --blue-100: #B2FFB2;
+  --blue-300: #4DFF4D;
+  --blue-500: #00FF66; /* Mapping blue to neon for primary action */
+  --blue-600: #00CC52;
+  --blue-700: #00993D;
 
   /* ---------- Dark foundation (surfaces, back→front) ------- */
-  --bg-0: #050507;   /* page void                         */
-  --bg-1: #0F0F13;   /* app shell / deepest panel         */
-  --bg-2: #16161D;   /* card / raised surface             */
-  --bg-3: #1E1E28;   /* hover surface / input / popover   */
-  --bg-4: #272733;   /* active / pressed surface          */
+  --bg-0: #000000;   /* page void                         */
+  --bg-1: #0A0A0A;   /* app shell / deepest panel         */
+  --bg-2: #141414;   /* card / raised surface             */
+  --bg-3: #1A1A1A;   /* hover surface / input / popover   */
+  --bg-4: #222222;   /* active / pressed surface          */
 
   /* ---------- Foreground (text on dark) ------------------- */
   --fg-1: #F4F4F6;   /* primary text / headings           */
@@ -78,11 +78,11 @@
   --shadow-lg: 0 20px 50px rgba(0,0,0,0.50);
 
   /* ---------- Radii ---------------------------------------- */
-  --r-xs: 6px;
-  --r-sm: 9px;
-  --r-md: 12px;    /* default control / input radius */
-  --r-lg: 16px;    /* cards                          */
-  --r-xl: 22px;    /* modals / large panels          */
+  --r-xs: 8px;
+  --r-sm: 12px;
+  --r-md: 999px;   /* input pill / controls */
+  --r-lg: 24px;    /* curvy cards (VYRO style) */
+  --r-xl: 32px;    /* modals / large panels          */
   --r-pill: 999px;
 
   /* ---------- Spacing (4px base) -------------------------- */

@@ -36,9 +36,11 @@ export function setApiToken(token) {
   }
 }
 
-/** fetch() that attaches X-API-Token when one is configured. */
+/** fetch() that attaches Authorization when one is configured. */
 export function apiFetch(url, init = {}) {
   const token = getApiToken();
   if (!token) return fetch(url, init);
-  return fetch(url, { ...init, headers: { ...(init.headers || {}), 'X-API-Token': token } });
+  return fetch(url, { ...init, headers: { ...(init.headers || {}), 'Authorization': `Bearer ${token}` } });
 }
+
+export const request = apiFetch;

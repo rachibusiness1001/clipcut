@@ -71,12 +71,30 @@ export const GRADE_PRESETS = [
 ];
 
 export const SUBTITLE_PRESETS = [
+  // 1. Original/Existing
   { id: 'classic_white', label: 'Classic', hi: '#FFFF00', style: { color: '#fff', fontFamily: 'Verdana, sans-serif', textShadow: '-1px -1px 0 #000,1px -1px 0 #000,-1px 1px 0 #000,1px 1px 0 #000' } },
-  { id: 'hormozi_bold', label: 'Hormozi', hi: '#00FF00', style: { color: '#fff', fontFamily: "Impact,'Arial Black',sans-serif", textShadow: '-1.5px -1.5px 0 #000,1.5px -1.5px 0 #000,-1.5px 1.5px 0 #000,1.5px 1.5px 0 #000', letterSpacing: '.02em' } },
-  { id: 'neon_glow', label: 'Neon', hi: '#00FFFF', style: { color: '#fff', fontFamily: "'Helvetica Neue',sans-serif", textShadow: '0 0 4px #0ff,0 0 8px #0ff' } },
-  { id: 'mrbeast_box', label: 'MrBeast', hi: '#FFFF00', style: { color: '#fff', fontFamily: "'Arial Black',sans-serif", background: '#000', padding: '2px 6px', borderRadius: '3px' } },
-  { id: 'minimal_clean', label: 'Minimal', hi: '#FFFFFF', style: { color: '#fff', fontFamily: "'Helvetica Neue',sans-serif", fontWeight: 500 } },
-  { id: 'fire_impact', label: 'Fire', hi: '#FF4444', style: { color: '#fff', fontFamily: 'Impact,sans-serif', textShadow: '0 0 3px #f44,-1px -1px 0 #000,1px 1px 0 #000', letterSpacing: '.03em' } },
+  { id: 'hormozi_bold', label: 'Hormozi', hi: '#FDE700', style: { color: '#fff', fontFamily: "Impact,'Arial Black',sans-serif", textShadow: '-2px -2px 0 #000,2px -2px 0 #000,-2px 2px 0 #000,2px 2px 0 #000', letterSpacing: '.02em', textTransform: 'uppercase' } },
+  { id: 'neon_glow', label: 'Neon Glow', hi: '#00FFFF', style: { color: '#fff', fontFamily: "Montserrat, sans-serif", textShadow: '0 0 4px #0ff,0 0 10px #0ff', fontWeight: 900 } },
+  
+  // 2. New additions from ClipShlip reference
+  { id: 'cinematic', label: 'Cinematic', hi: '#FFFF00', style: { color: '#fff', fontFamily: 'Montserrat, sans-serif', fontWeight: 800, textShadow: '0 2px 4px rgba(0,0,0,0.8)' } },
+  { id: 'karaoke_pop', label: 'Karaoke pop', hi: '#FFB800', style: { color: '#fff', fontFamily: 'Montserrat, sans-serif', fontWeight: 900, textShadow: '-1.5px -1.5px 0 #000,1.5px -1.5px 0 #000,-1.5px 1.5px 0 #000,1.5px 1.5px 0 #000' } },
+  { id: 'bold_impact', label: 'Bold impact', hi: '#FF0000', style: { color: '#fff', fontFamily: "Impact, sans-serif", textShadow: '-2px -2px 0 #000,2px -2px 0 #000,-2px 2px 0 #000,2px 2px 0 #000', textTransform: 'uppercase' } },
+  { id: 'punch_box', label: 'Punch Box', hi: '#B2FF00', style: { color: '#fff', fontFamily: "Anton, sans-serif", background: '#000', padding: '0 4px', textTransform: 'uppercase' } },
+  { id: 'clean_yellow', label: 'Clean Yellow', hi: '#FFE600', style: { color: '#fff', fontFamily: 'Poppins, sans-serif', fontWeight: 700 } },
+  { id: 'underline_pop', label: 'Underline Pop', hi: '#FF0055', style: { color: '#fff', fontFamily: 'Montserrat, sans-serif', fontWeight: 800, textDecoration: 'underline', textDecorationColor: '#FF0055' } },
+  { id: 'documentary', label: 'Documentary', hi: '#FFFFFF', style: { color: '#eee', fontFamily: 'Poppins, sans-serif', fontWeight: 400, textShadow: '0 1px 2px #000' } },
+  { id: 'creator_white', label: 'Creator White', hi: '#FFFFFF', style: { color: '#fff', fontFamily: 'Montserrat, sans-serif', fontWeight: 900, textShadow: '-1.5px -1.5px 0 #000,1.5px -1.5px 0 #000,-1.5px 1.5px 0 #000,1.5px 1.5px 0 #000' } },
+  { id: 'anton_impact', label: 'Anton Impact', hi: '#FFCC00', style: { color: '#fff', fontFamily: 'Anton, sans-serif', textShadow: '-1.5px -1.5px 0 #000,1.5px -1.5px 0 #000,-1.5px 1.5px 0 #000,1.5px 1.5px 0 #000', textTransform: 'uppercase' } },
+  { id: 'brand_block', label: 'Brand Block', hi: '#000000', style: { color: '#00FF66', fontFamily: 'Montserrat, sans-serif', fontWeight: 900, background: '#00FF66', padding: '0 4px' } },
+  { id: 'keyword_pop', label: 'Keyword Pop', hi: '#00FF88', style: { color: '#444', fontFamily: 'Montserrat, sans-serif', fontWeight: 900 } },
+  { id: 'outline_punch', label: 'Outline Punch', hi: '#FFFF00', style: { color: '#000', fontFamily: 'Montserrat, sans-serif', fontWeight: 900, textShadow: '-1.5px -1.5px 0 #fff,1.5px -1.5px 0 #fff,-1.5px 1.5px 0 #fff,1.5px 1.5px 0 #fff', textTransform: 'uppercase' } },
+  { id: 'word_reveal', label: 'Word Reveal', hi: '#FFFFFF', style: { color: '#fff', fontFamily: 'Montserrat, sans-serif', fontWeight: 800, textShadow: '0 1px 3px #000' } },
+  { id: 'word_tiles', label: 'Word Tiles', hi: '#99FF00', style: { color: '#fff', fontFamily: 'Montserrat, sans-serif', fontWeight: 700 } },
+  { id: 'sunset', label: 'Sunset', hi: '#FF6B6B', style: { color: '#FFB86C', fontFamily: 'Montserrat, sans-serif', fontWeight: 900, textTransform: 'uppercase' } },
+  { id: 'sticker', label: 'Sticker', hi: '#FF4D6D', style: { color: '#fff', fontFamily: 'Montserrat, sans-serif', fontWeight: 900, textShadow: '-2px -2px 0 #000,2px -2px 0 #000,-2px 2px 0 #000,2px 2px 0 #000', textTransform: 'uppercase' } },
+  { id: 'editorial_scale', label: 'Editorial Scale', hi: '#FFFFFF', style: { color: '#aaa', fontFamily: "'Playfair Display', serif", fontWeight: 400, fontStyle: 'italic' } },
+  { id: 'broadsheet', label: 'Broadsheet', hi: '#FFFFFF', style: { color: '#fff', fontFamily: "'Playfair Display', serif", fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em' } },
 ];
 
 // Instagram-Stories-style hook text defaults. Keys match the backend

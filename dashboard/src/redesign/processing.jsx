@@ -71,26 +71,26 @@ export function ProcessingView({ media, status, logs = [], step, clips = [], onC
   const phase = failed ? 'failed' : paused ? 'paused' : (words[effectiveStep] || (clips.length > 0 ? 'rendering' : 'working'));
   const metaOverride = pipelineStepMeta(logs, { ...opts, mediaType: media?.type });
 
+  const STEP_LIST = [
+    { id: 'metadata', label: 'Reading video metadata', logMeta: 'preflight', activeIn: ['queued', 'preflight'], doneIn: ['acquiring', 'downloading', 'transcribing', 'analyzing', 'cutting', 'reframing', 'quality', 'finalizing', 'processing', 'completed'] },
+    { id: 'audio', label: 'Extracting audio', logMeta: 'acquiring', activeIn: ['acquiring', 'downloading'], doneIn: ['transcribing', 'analyzing', 'cutting', 'reframing', 'quality', 'finalizing', 'processing', 'completed'] },
+    { id: 'transcribing', label: 'Transcribing speech', logMeta: 'transcribing', activeIn: ['transcribing'], doneIn: ['analyzing', 'cutting', 'reframing', 'quality', 'finalizing', 'processing', 'completed'] },
+    { id: 'translating', label: 'Translating captions', logMeta: 'not needed (transcribe)', activeIn: [], doneIn: ['analyzing', 'cutting', 'reframing', 'quality', 'finalizing', 'processing', 'completed'], skipText: 'not needed (transcribe)' },
+    { id: 'roman', label: 'Converting to Roman script', logMeta: 'not needed for en', activeIn: [], doneIn: ['analyzing', 'cutting', 'reframing', 'quality', 'finalizing', 'processing', 'completed'], skipText: 'not needed for en' },
+    { id: 'analyzing', label: 'Finding viral moments', logMeta: 'analyzing', activeIn: ['analyzing'], doneIn: ['cutting', 'reframing', 'quality', 'finalizing', 'processing', 'completed'] },
+    { id: 'cutting', label: 'Cutting clips', logMeta: 'cutting', activeIn: ['cutting'], doneIn: ['reframing', 'quality', 'finalizing', 'processing', 'completed'] },
+    { id: 'reframing', label: 'Reframing to vertical', logMeta: 'reframing', activeIn: ['reframing'], doneIn: ['quality', 'finalizing', 'processing', 'completed'] },
+    { id: 'rendering', label: 'Rendering clips', logMeta: 'finalizing', activeIn: ['quality', 'finalizing', 'processing'], doneIn: ['completed'] },
+  ];
+
   return <main className="container fade-in">
     <Hero eyebrow={failed ? 'Pipeline error' : paused ? 'Pipeline paused' : 'Pipeline running'} line1={failed ? 'Something broke.' : paused ? 'Work is paused.' : 'Cutting your clips.'}
       sub={failed ? 'Check the log below, then retry or start over.' : 'Every phase is checkpointed. Verified clips appear immediately, and retries resume from durable work.'} />
-    <div className="proc">
-      <aside className="proc-aside"><Panel><div className="pipe">
-        {PIPE.map((pipelineStep, index) => {
-          const done = !failed && index < activeIdx;
-          const active = !failed && index === activeIdx;
-          return <div key={pipelineStep.id} className={`pstep${done ? ' done' : active ? ' active' : ''}`} aria-current={active ? 'step' : undefined}>
-            <div className="rail"><div className="pdot"><Icon n={done ? 'check' : pipelineStep.icon} /></div>{index < PIPE.length - 1 && <div className="pseg-v" />}</div>
-            <div className="pbody"><div className="pname">{pipelineStep.id === 'reframe' ? `Reframe ${opts.aspect || '9:16'}` : pipelineStep.name}</div>
-              <div className="pmeta">{active ? `${metaOverride[pipelineStep.id] || pipelineStep.meta} …` : done ? 'done' : (metaOverride[pipelineStep.id] || pipelineStep.meta)}</div></div>
-          </div>;
-        })}
-      </div></Panel></aside>
-      <div><Panel>
-        <div className="pbar-wrap" role="progressbar" aria-label={`Pipeline ${phase}`} aria-valuemin="0" aria-valuemax="100" aria-valuenow={Math.round(pct)}>
-          <div className="pbar"><i style={{ width: `${pct}%`, background: failed ? 'var(--danger)' : undefined }} /></div><div className="pbar-pct">{phase}</div>
-        </div>
-        <div className="processing-toolbar"><span className="label"><span className="mono">src ·</span> {String(sourceLabel).slice(0, 46)}</span>
+    
+    <div className="proc" style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+      <Panel>
+        <div className="processing-toolbar" style={{ borderBottom: '1px solid var(--border)', paddingBottom: 16, marginBottom: 16 }}>
+          <span className="label"><span className="mono">src ·</span> {String(sourceLabel).slice(0, 46)}</span>
           <span className="processing-actions">
             {failed && <Btn variant="secondary" size="sm" icon="wand-sparkles" onClick={onRetry}>Retry</Btn>}
             {!failed && onPause && (paused ? <Btn variant="secondary" size="sm" icon="play" onClick={onResume}>Resume</Btn> : <Btn variant="ghost" size="sm" icon="clock" onClick={onPause}>Pause</Btn>)}
@@ -98,20 +98,62 @@ export function ProcessingView({ media, status, logs = [], step, clips = [], onC
             <Btn variant="ghost" size="sm" icon="x" onClick={onCancel}>{failed ? 'Start over' : 'Discard'}</Btn>
           </span>
         </div>
-        <Operations runtime={runtime} preflight={preflight} />
+
+        <div className="detailed-progress-list">
+          {STEP_LIST.map((s, i) => {
+            const isDone = s.doneIn.includes(effectiveStep) || effectiveStep === 'completed';
+            const isActive = !isDone && !failed && (s.activeIn.includes(effectiveStep));
+            const isFailed = failed && s.activeIn.includes(effectiveStep);
+            const isFuture = !isDone && !isActive && !isFailed;
+            
+            return (
+              <div key={s.id} className={`step-item ${isDone ? 'done' : isActive ? 'active' : isFailed ? 'failed' : 'future'}`}>
+                <div className="step-dot-wrap">
+                  <div className={`step-dot ${isActive ? 'pulse' : ''}`} />
+                </div>
+                <div className="step-content">
+                  <div className="step-title">{s.label}</div>
+                  <div className="step-meta">
+                    {s.skipText && isDone ? s.skipText : 
+                     isActive ? 'Processing...' : 
+                     isFailed ? 'Error occurred' : 
+                     isDone ? 'Completed' : ''}
+                  </div>
+                  {isFailed && (
+                    <div className="step-error-log" style={{ color: 'var(--danger)', fontSize: 12, marginTop: 8, fontFamily: 'monospace' }}>
+                      {visibleLogs.slice(-3).join('\n')}
+                      <div style={{ marginTop: 8 }}>
+                        <Btn variant="secondary" size="sm" onClick={onRetry}>Retry this step</Btn>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </Panel>
+
+      {/* Hidden logs for debug, hardware notice if no gpu */}
+      <Panel>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+          <h3 style={{ margin: 0, fontSize: 14, color: 'var(--fg-muted)' }}>System Logs</h3>
+          {!opts.gpu && <Badge tone="warn" icon="cpu">Local CPU / Free Tier AI</Badge>}
+        </div>
         <div className="log" ref={logRef} role="log" aria-live="polite" aria-relevant="additions"
-          onScroll={(event) => { const node = event.currentTarget; followTail.current = node.scrollHeight - node.scrollTop - node.clientHeight < 48; }}>
+          onScroll={(event) => { const node = event.currentTarget; followTail.current = node.scrollHeight - node.scrollTop - node.clientHeight < 48; }}
+          style={{ maxHeight: 150 }}>
           {visibleLogs.length === 0 && <div className="ln"><span>waiting for the worker…</span></div>}
           {visibleLogs.map((line, index) => <div key={`${index}-${line}`} className="ln"><span className={/✓|done|complete|found/i.test(line) ? 'ok' : ''} style={/error/i.test(line) ? { color: 'var(--danger)' } : undefined}>{line}</span></div>)}
           {!failed && <div aria-hidden="true"><span className="cursor" /></div>}
         </div>
       </Panel>
+
       <section aria-labelledby="clips-title">
         <div className="stream-head"><h3 id="clips-title" aria-level="2">Clips</h3>{clips.length > 0 ? <Badge tone="teal" icon="check">{clips.length} ready</Badge> : <Badge tone="out">{failed ? 'no clips' : 'finding moments…'}</Badge>}</div>
         <div className="stream">{clips.slice(0, 8).map((clip, index) => <MiniClip key={clip.original_index ?? index} clip={clip} />)}
           {!failed && clips.length < 4 && Array.from({ length: 4 - clips.length }).map((_, index) => <div key={`slot${index}`} className="slot">{index === 0 ? <div className="sk" /> : null}</div>)}</div>
       </section>
-      </div>
     </div>
   </main>;
 }
